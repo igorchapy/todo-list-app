@@ -1,21 +1,18 @@
-{% extends 'base.html' %}
-{% block content %}
-<h1>Todo List</h1>
-<a href="{% url 'add_task' %}">Add Task</a>
-<ul>
-    {% for task in tasks %}
-        <li>
-            <b>{{ task.content }}</b><br>
-            Created at: {{ task.created_at }}<br>
-            Deadline: {{ task.deadline|default:"None" }}<br>
-            Tags: {{ task.tags.all|join:", " }}<br>
-            Status: {{ "Done" if task.is_done else "Not done" }}<br>
-            <a href="{% url 'update_task' task.id %}">Update</a>
-            <a href="{% url 'delete_task' task.id %}">Delete</a>
-            <a href="{% url 'toggle_task_status' task.id %}">
-                {{ "Undo" if task.is_done else "Complete" }}
-            </a>
-        </li>
-    {% endfor %}
-</ul>
-{% endblock %}
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Todo List</title>
+</head>
+<body>
+    <h1>Мої задачі</h1>
+    <ul>
+        {% for task in tasks %}
+            <li>
+                {{ task.title }} - {% if task.is_done %}✅{% else %}❌{% endif %}
+            </li>
+        {% empty %}
+            <li>Немає задач</li>
+        {% endfor %}
+    </ul>
+</body>
+</html>
