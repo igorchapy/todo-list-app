@@ -1,0 +1,15 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Todo List</title>
+</head>
+<body>
+    <div class="sidebar">
+        <a href="{% url 'home' %}">Home</a><br>
+        <a href="{% url 'tag_list' %}">Tags</a><br>
+    </div>
+    <div class="main">
+        {% block content %}{% endblock %}
+    </div>
+</body>
+</html>
