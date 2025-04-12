@@ -1,78 +1,95 @@
-from django.shortcuts import render, redirect, get_object_or_404
+from django.views import View
+from django.views.generic import ListView, CreateView, UpdateView, DeleteView
+from django.shortcuts import redirect, get_object_or_404
+from django.urls import reverse_lazy
 from .models import Task, Tag
 from .forms import TaskForm, TagForm
+from django.utils.decorators import method_decorator
+from django.views.decorators.csrf import csrf_exempt
 
 
-def home(request):
-    tasks = Task.objects.all().order_by('is_done', '-created_at')
-    return render(request, 'tasks/home.html', {'tasks': tasks})
+class HomeView(ListView):
+    model = Task
+    template_name = 'tasks/home.html'
+    context_object_name = 'tasks'
+
+    def get_queryset(self):
+        return Task.objects.all().order_by('is_done', '-created_at')
 
 
-def add_task(request):
-    if request.method == 'POST':
-        form = TaskForm(request.POST)
-        if form.is_valid():
-            form.save()
-            return redirect('home')
-    else:
-        form = TaskForm()
-    return render(request, 'tasks/form.html', {'form': form, 'title': 'Add Task'})
+class TaskCreateView(CreateView):
+    model = Task
+    form_class = TaskForm
+    template_name = 'tasks/form.html'
+    success_url = reverse_lazy('home')
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['title'] = 'Add Task'
+        return context
 
 
-def update_task(request, task_id):
-    task = get_object_or_404(Task, id=task_id)
-    if request.method == 'POST':
-        form = TaskForm(request.POST, instance=task)
-        if form.is_valid():
-            form.save()
-            return redirect('home')
-    else:
-        form = TaskForm(instance=task)
-    return render(request, 'tasks/form.html', {'form': form, 'title': 'Update Task'})
+class TaskUpdateView(UpdateView):
+    model = Task
+    form_class = TaskForm
+    template_name = 'tasks/form.html'
+    success_url = reverse_lazy('home')
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['title'] = 'Update Task'
+        return context
 
 
-def delete_task(request, task_id):
-    task = get_object_or_404(Task, id=task_id)
-    task.delete()
-    return redirect('home')
+class TaskDeleteView(DeleteView):
+    model = Task
+    success_url = reverse_lazy('home')
+
+    def get(self, request, *args, **kwargs):
+        return self.post(request, *args, **kwargs)
 
 
-def toggle_task_status(request, task_id):
-    task = get_object_or_404(Task, id=task_id)
-    task.is_done = not task.is_done
-    task.save()
-    return redirect('home')
+class ToggleTaskStatusView(View):
+    def post(self, request, task_id):
+        task = get_object_or_404(Task, id=task_id)
+        task.is_done = not task.is_done
+        task.save()
+        return redirect('home')
 
 
-def tag_list(request):
-    tags = Tag.objects.all()
-    return render(request, 'tasks/tag_list.html', {'tags': tags})
+class TagListView(ListView):
+    model = Tag
+    template_name = 'tasks/tag_list.html'
+    context_object_name = 'tags'
 
 
-def add_tag(request):
-    if request.method == 'POST':
-        form = TagForm(request.POST)
-        if form.is_valid():
-            form.save()
-            return redirect('tag_list')
-    else:
-        form = TagForm()
-    return render(request, 'tasks/form.html', {'form': form, 'title': 'Add Tag'})
+class TagCreateView(CreateView):
+    model = Tag
+    form_class = TagForm
+    template_name = 'tasks/form.html'
+    success_url = reverse_lazy('tag_list')
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['title'] = 'Add Tag'
+        return context
 
 
-def update_tag(request, tag_id):
-    tag = get_object_or_404(Tag, id=tag_id)
-    if request.method == 'POST':
-        form = TagForm(request.POST, instance=tag)
-        if form.is_valid():
-            form.save()
-            return redirect('tag_list')
-    else:
-        form = TagForm(instance=tag)
-    return render(request, 'tasks/form.html', {'form': form, 'title': 'Update Tag'})
+class TagUpdateView(UpdateView):
+    model = Tag
+    form_class = TagForm
+    template_name = 'tasks/form.html'
+    success_url = reverse_lazy('tag_list')
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['title'] = 'Update Tag'
+        return context
 
 
-def delete_tag(request, tag_id):
-    tag = get_object_or_404(Tag, id=tag_id)
-    tag.delete()
-    return redirect('tag_list')
+class TagDeleteView(DeleteView):
+    model = Tag
+    success_url = reverse_lazy('tag_list')
+
+    def get(self, request, *args, **kwargs):
+        return self.post(request, *args, **kwargs)
