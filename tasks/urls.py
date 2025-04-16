@@ -1,10 +1,17 @@
 from django.urls import path
-from tasks import views
-
+from . import views
 
 urlpatterns = [
-    path('', views.home, name='home'),                    # домашня сторінка
-    path('tags/', views.tag_list, name='tag_list'),       # список тегів
-    path('tasks/add/', views.add_task, name='add_task'),  # додавання задачі
-    path('tags/add/', views.add_tag, name='add_tag'),     # додавання тегу
+    # Task routes
+    path('', views.HomeView.as_view(), name='home'),
+    path('task/add/', views.TaskCreateView.as_view(), name='task_add'),
+    path('task/<int:pk>/edit/', views.TaskUpdateView.as_view(), name='task_edit'),
+    path('task/<int:pk>/delete/', views.TaskDeleteView.as_view(), name='task_delete'),
+    path('task/<int:task_id>/toggle/', views.ToggleTaskStatusView.as_view(), name='task_toggle'),
+
+    # Tag routes
+    path('tags/', views.TagListView.as_view(), name='tag_list'),
+    path('tags/add/', views.TagCreateView.as_view(), name='tag_add'),
+    path('tags/<int:pk>/edit/', views.TagUpdateView.as_view(), name='tag_edit'),
+    path('tags/<int:pk>/delete/', views.TagDeleteView.as_view(), name='tag_delete'),
 ]
