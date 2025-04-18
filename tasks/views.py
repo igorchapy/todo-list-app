@@ -14,6 +14,10 @@ class HomeView(ListView):
     def get_queryset(self):
         return Task.objects.all().order_by('is_done', '-created_at')
 
+def task_list(request):
+    tasks = Task.objects.all()
+    return render(request, 'tasks/task_list.html', {'tasks': tasks})
+
 
 class TaskCreateView(CreateView):
     model = Task
