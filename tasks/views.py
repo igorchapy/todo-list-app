@@ -4,6 +4,7 @@ from django.shortcuts import redirect, get_object_or_404
 from django.urls import reverse_lazy
 from .models import Task, Tag
 from .forms import TaskForm, TagForm
+from django.shortcuts import render
 
 
 class HomeView(ListView):
@@ -18,6 +19,15 @@ def task_list(request):
     tasks = Task.objects.all()
     return render(request, 'tasks/task_list.html', {'tasks': tasks})
 
+
+def home(request):
+    return render(request, 'home.html')
+
+def about(request):
+    return render(request, 'about.html')
+
+def contact(request):
+    return render(request, 'contact.html')
 
 class TaskCreateView(CreateView):
     model = Task
